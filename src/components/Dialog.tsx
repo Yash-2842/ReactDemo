@@ -17,12 +17,12 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
-type deleteDialogProp = {
+interface deleteDialogProp {
     handleClose : ()=>void,
     handleCancel ? : ()=>void,
     title: string,
     message : string,
-    type : 'Delete' | 'Add' | 'Info'
+    type : 'Delete' | 'Info'
 }
 
 const DeleteDialog = ({handleClose,title,message,type,handleCancel}:deleteDialogProp) =>{
@@ -33,8 +33,8 @@ const DeleteDialog = ({handleClose,title,message,type,handleCancel}:deleteDialog
     onClose={handleClose}
     aria-describedby="alert-dialog-slide-description"
   >
-    <DialogTitle>{title}</DialogTitle>
-    <DialogContent>
+    <DialogTitle sx={{backgroundColor:'#036ffc',color:'white'}}>Message</DialogTitle>
+    <DialogContent sx={{marginTop:'1rem'}}>
       <DialogContentText id="alert-dialog-slide-description">
         {message}
       </DialogContentText>

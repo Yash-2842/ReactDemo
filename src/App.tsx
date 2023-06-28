@@ -6,10 +6,13 @@ import Admin from './pages/Admin';
 import CountryData from './components/CountryData';
 import CountryForm from './components/CountryForm';
 import CityData from './components/CityData';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <div className="App">
+      <ToastContainer />
       <Route path='/' exact>
         <Redirect to='/admin/country' />
       </Route>

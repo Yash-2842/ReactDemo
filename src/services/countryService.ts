@@ -1,75 +1,100 @@
 import axios from "axios"
 import { string } from "yup";
-import { countryDataType } from "../components/CountryData";
-import { FormValues } from "../components/CountryForm";
+import { countryDataType } from "../interface/countryInterface";
+import http from './base-service'
+import {toast} from 'react-toastify'
 
-const url= 'https://apit1.web2.anasource.com/'
+const url = 'https://apit1.web2.anasource.com/'
 
-export const getAllCountries = async (path:string,pageNumber:number,pageSize:number,sortOrder?:string,sortColumn?:string,searchQuery?:string) => {
-    let result ;
-    await axios.post(url+path, {
+export const getAllCountries = async (path: string, pageNumber: number, pageSize: number, sortOrder?: string, sortColumn?: string, searchQuery?: string) => {
+    let result;
+    const payload = {
         "pageNumber": pageNumber,
         "pageSize": pageSize,
         "sortOrder": sortOrder,
         "sortBy": sortColumn,
         "searchKey": searchQuery
-    }).then(response => {
+    }
+    await http.post(url + path, payload).then(response => {
         result = response.data
-        console.log(response.data)
-    }).catch(err => console.log(err.message))
+        console.log(response)
+    }).catch(err => console.log(err.response.data.message))
     return result
 }
 
-export const getCountry =async (path:string) => {
+export const getCountry = async (path: string) => {
     let result;
-    await axios.get(url+path).then(response => {
+    await http.get(url + path).then(response => {
         result = response.data.data
-    }).catch(err => console.log(err.message))
+    }).catch(err => console.log(err.response.data.message))
     return result
 }
 
-export const addCountry = async (path:string,data:FormValues) => {
+export const addCountry = async (path: string, data: countryDataType) => {
     const obj = {
         ...data,
-        status:data.status==='Active'?2:1
+        status: data.status === 'Active' ? 2 : 1
     }
-    console.log(obj)
-    let message
-    await axios.post(url+path,obj)
-        .then(response =>{
-            console.log(response.data.message)
-            message = response.data.message
-        }).catch(err =>{
-            console.log(err.message)
-            message = err.message
+    let response
+    await http.post(url + path, obj)
+        .then(res => {
+            console.log('service',res.data)
+            response = res.data
+        }).catch(err => {
+            console.log('service',err.response.data)
+            response = err.response.data
         })
-        return message
+    return response
 }
 
-export const editCountry = async (path:string,data:FormValues) => {
+export const editCountry = async (path: string, data: countryDataType) => {
     const obj = {
         ...data,
-        status:data.status==='Active'?2:1
+        status: data.status === 'Active' ? 2 : 1
     }
-    let message;
-    await axios.put(url+path,obj)
-        .then(response =>{
-            message =  response.data.message
-        }).catch(err =>{
-            console.log(err.message)
-            message =  err.message
+    let response;
+    await http.put(url + path, obj)
+        .then(res => {
+            response = res.data
+        }).catch(err => {
+            response =  err.response.data
         })
-        return message
+    return response
 }
 
-export const deleteCountry = async (path:string) => {
-    let message;
-    await axios.delete(url+path).then(response =>{
-        message = response.data.message
+export const deleteCountry = async (path: string) => {
+    let response = {
+        status : 0,
+        message : ''
+    }
+    await http.delete(url + path).then(res => {
+        // response = res.data
+        response.status = res.data.statusCode
+        response.message = res.data.message
+        // toast.success(res.data.message, {
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "colored",
+        //     });
     }).catch(err => {
-        message = err.response.data.Message
+        console.log(err)
+        response.message = err.response ? err.response.data.Errors.Country : err.message 
+        response.status = err.response ? err.response.data.statusCode : response.status
+        // toast.error(err.response ? err.response.data.Errors.Country : err.message , {
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "colored",
+        //     });
+        //     response = err.data 
     })
-    return message
+    console.log(response)
+    return response
 }
 
 
